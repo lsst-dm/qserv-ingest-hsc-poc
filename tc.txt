@@ -1,0 +1,54 @@
+
+tr pq2csv {
+    site lsstvc {
+        pfn "/home/hchiang2/stack/parquet_tools/python/parquet_tools/pq2csv/pq2csv"
+        arch "x86_64"
+        os "linux"
+        type "INSTALLED"
+    }
+}
+
+tr sed {
+    site lsstvc {
+        pfn "/usr/bin/sed"
+        arch "x86_64"
+        os "linux"
+        type "INSTALLED"
+    }
+}
+
+tr partition {
+    site lsstvc {
+        pfn "${PARTITION_DIR}/bin/sph-partition"
+        arch "x86_64"
+        os "linux"
+        type "INSTALLED"
+    }
+}
+
+tr hackType {
+    site lsstvc {
+        pfn "${POC}/python/hackTypes.py"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+    }
+}
+
+tr allocateChunk {
+    site lsstvc {
+        pfn "${POC}/python/allocateChunkSet.py"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+    }
+}
+
+tr qingest {
+    site lsstvc {
+        pfn "${POC}/python/qingestWrapper.py"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+    }
+}
