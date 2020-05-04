@@ -2,7 +2,7 @@
 
 # This is a proof-of-concept only
 # Read a list of the input parquet files as from SciPi
-# Make a Pegasus dax workflow, including temporary hackarounds, 
+# Make a Pegasus dax workflow, including temporary hackarounds,
 # converting to csv, partitioning into chunk files, registering, etc.
 
 import argparse
@@ -79,9 +79,9 @@ def generateDax(name="object", inputData=None):
 
             taskname = 'hackType'
             task1 = peg.Job(name=taskname)
-            outparq = peg.File("hack-%d.parq" % i) 
+            outparq = peg.File("hack-%d.parq" % i)
             dax.addFile(outparq)
-            task1.addArguments("-i", inparq, "-o", outparq) 
+            task1.addArguments("-i", inparq, "-o", outparq)
             dax.addJob(task1)
             logfile = peg.File("%s-%s.log" % (taskname, i, ))
             dax.addFile(logfile)
@@ -152,6 +152,7 @@ def generateDax(name="object", inputData=None):
             dax.depends(parent=task0c, child=task5)
 
     return dax
+
 
 if __name__ == "__main__":
     logger = logging.getLogger()

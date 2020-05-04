@@ -9,25 +9,25 @@ import os
 import yaml
 from lsst.utils import getPackageDir
 
-    
+
 def main(inputFile, outputFile):
     """Temporary hackarounds from using old pyarrow"""
     parquet_file = pq.ParquetFile(inputFile)
     df = parquet_file.read().to_pandas()
-    
+
     # Brutally fill nulls with 0
     # It can be interpreted as boolean
     df.fillna(value=0, inplace=True)
-    
+
     typeMapping = {
         'FLOAT': 'float32',
         'DOUBLE': 'float64',
         'BOOLEAN': 'bool',
-        'BIGINT': 'int64', 
-        'INTEGER': 'int32', 
+        'BIGINT': 'int64',
+        'INTEGER': 'int32',
         'TEXT': 'str',
     }
-    
+
     filepath = os.path.join(getPackageDir("cat"), 'yml', 'hsc.yaml')
     with open(filepath, 'r') as f:
         hscSchema = yaml.safe_load(f)['tables']
@@ -39,10 +39,10 @@ def main(inputFile, outputFile):
         if sqlType in typeMapping:
             sqlType = typeMapping[sqlType]
         hackDict[column['name']] = sqlType
-    
+
     print(hackDict)
     df = df.astype(hackDict, copy=False)
-    
+
     table = pyarrow.Table.from_pandas(df)
     pq.write_table(table, outputFile, compression='none')
 

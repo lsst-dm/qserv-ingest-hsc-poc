@@ -10,6 +10,7 @@ import sys
 
 AUTH_PATH = "~/.lsst/qserv"
 
+
 def main(basepath, url, transactionId, tableName, logger):
     """Make loading commands for all chunk files in the given folder"""
     try:
@@ -42,7 +43,6 @@ def main(basepath, url, transactionId, tableName, logger):
                       f"{host} {port} {transactionId} {tableName} P {entry.path}"
                 logger.debug(cmd)
 
-                
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     parser.add_argument("--id", type=int, help="Super transaction id")
     parser.add_argument("--idFile", type=str, help="Path to file containing the super transaction id")
     parser.add_argument("--url", type=str, help="Web Service URL",
-                        default="http://lsst-qserv-master01:25080/ingest/v1/chunk") 
+                        default="http://lsst-qserv-master01:25080/ingest/v1/chunk")
     parser.add_argument("--tableName", type=str, help="Table name", default="Object")
     args = parser.parse_args()
 
