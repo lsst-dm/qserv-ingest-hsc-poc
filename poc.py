@@ -26,7 +26,7 @@ def generateDax(name="object", inputData=None):
     # Note this json file has the database name....!!!
     tableJson = peg.File("test.json")
     dax.addFile(tableJson)
-    database = "hsc_test_w_2020_14_03"
+    database = "hsc_rc2_w_2020_14_00"
 
     # (Ab)using the shared filesystem....!!!
     chunkBaseFolder = os.path.join("/project", "hchiang2", "qserv", "qqpoc")
