@@ -47,7 +47,7 @@ def resolveUrl(command, host, port):
         resource = "/ingest/table"
     else:
         raise NotImplementedError("Unrecognized command")
-    return  host + ':' + str(port) + resource
+    return host + ':' + str(port) + resource
 
 
 def _addArgumentCreateDb(subparser):
@@ -67,7 +67,7 @@ def _addArgumentCreateDb(subparser):
 
 def _addArgumentCreateTable(subparser):
     subparser.add_argument("table", type=str, action=DataAction,
-                            help="table name; will look for the schema in the felis file")
+                           help="table name; will look for the schema in the felis file")
     subparser.add_argument("json", type=str, action=JsonAction,
                            help="a json config file containing the table parameters")
     subparser.add_argument("felis", type=str, action=FelisAction,
@@ -130,11 +130,13 @@ def post(url, payload):
 
 class DataAction(argparse.Action):
     """argparse action to pack values into the namespace.data dict"""
+
     def __init__(self, option_strings, dest, nargs=None, type=None, **kwargs):
         if nargs is not None:
             raise ValueError("nargs not allowed")
         self.vtype = type
         super(DataAction, self).__init__(option_strings, dest, **kwargs)
+
     def __call__(self, parser, namespace, values, option_string):
         if not hasattr(namespace, "data"):
             setattr(namespace, "data", dict())
@@ -150,6 +152,7 @@ class DataAction(argparse.Action):
 
 class JsonAction(argparse.Action):
     """argparse action to read a json file into the namespace.data dict"""
+
     def __call__(self, parser, namespace, values, option_string):
         with open(values, "r") as f:
             x = json.load(f)
@@ -159,6 +162,7 @@ class JsonAction(argparse.Action):
 
 class FelisAction(argparse.Action):
     """argparse action to read a felis file into namespace.data["schema"]"""
+
     def __call__(self, parser, namespace, values, option_string):
         """figure out  the schema dict for create-table """
         tableName = namespace.data["table"]
@@ -178,8 +182,8 @@ class FelisAction(argparse.Action):
             else:
                 nullstring = " NOT NULL"
             schema.append({"name": column["name"], "type": column["mysql:datatype"] + nullstring})
-        schema.append({"name":"chunkId","type":"int(11) NOT NULL"})
-        schema.append({"name":"subChunkId","type":"int(11) NOT NULL"})
+        schema.append({"name": "chunkId", "type": "int(11) NOT NULL"})
+        schema.append({"name": "subChunkId", "type": "int(11) NOT NULL"})
         namespace.data["schema"] = schema
 
 
@@ -197,7 +201,7 @@ if __name__ == "__main__":
                   "start-transaction": "start a super-transaction",
                   "abort-transaction": "abort a super-transaction",
                   "commit-transaction": "commit a super-transaction"
-                 }
+                  }
     for command in operations:
         subparser = subparsers.add_parser(command, help=operations[command])
         subparser.add_argument("host", type=str, help="Web service host base URL")
