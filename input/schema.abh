@@ -27,7 +27,6 @@ riStd DOUBLE
 detect_isPrimary bool
 detect_isPatchInner bool
 detect_isTractInner bool
-calib_psf_used bool
 gRa DOUBLE
 gDecl DOUBLE
 gBdChi2 DOUBLE
