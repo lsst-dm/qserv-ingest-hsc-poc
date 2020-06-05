@@ -13,6 +13,7 @@ AUTH_PATH = "~/.lsst/qserv"
 
 
 def authorize():
+    """Set up the authorization key for Qserv Ingest system"""
     try:
         with open(os.path.expanduser(AUTH_PATH), 'r') as f:
             authKey = f.read().strip()
@@ -23,15 +24,30 @@ def authorize():
 
 
 def resolveUrl(command, host, port):
+    """Configure the full URL
+
+    Parameters
+    ----------
+    command: `str`
+        The service operation; this determines the resource to be used
+    host: `str`
+        Base server URL
+    port: `str`
+        Port number of the web service
+
+    Returns
+    -------
+    the resource URI
+    """
     if "db" in command:
-        path = "/ingest/database"
+        resource = "/ingest/database"
     elif "transaction" in command:
-        path = "/ingest/trans"
+        resource = "/ingest/trans"
     elif "table" in command:
-        path = "/ingest/table"
+        resource = "/ingest/table"
     else:
         raise NotImplementedError("Unrecognized command")
-    return  host + ':' + str(port) + path
+    return  host + ':' + str(port) + resource
 
 
 def _addArgumentCreateDb(subparser):
@@ -59,8 +75,14 @@ def _addArgumentCreateTable(subparser):
 
 
 def put(url, payload=None, params=None):
-    """
-    inputs: payload `dict`
+    """Perform a standard put method
+
+    Parameters
+    ----------
+    payload: `dict`
+        Application data as JSON
+    params: `dict`
+        Parameters to be included in the URL's query string
     """
     authKey = authorize()
     logging.debug(url)
@@ -74,6 +96,13 @@ def put(url, payload=None, params=None):
 
 
 def post(url, payload):
+    """Perform a standard post method
+
+    Parameters
+    ----------
+    payload: `dict`
+        Application data as JSON
+    """
     authKey = authorize()
     payload["auth_key"] = authKey
     response = requests.post(url, json=payload)
@@ -100,7 +129,7 @@ def post(url, payload):
 
 
 class DataAction(argparse.Action):
-    """argparse action to attempt casting the values to floats and put into a dict"""
+    """argparse action to pack values into the namespace.data dict"""
     def __init__(self, option_strings, dest, nargs=None, type=None, **kwargs):
         if nargs is not None:
             raise ValueError("nargs not allowed")
@@ -120,6 +149,7 @@ class DataAction(argparse.Action):
 
 
 class JsonAction(argparse.Action):
+    """argparse action to read a json file into the namespace.data dict"""
     def __call__(self, parser, namespace, values, option_string):
         with open(values, "r") as f:
             x = json.load(f)
@@ -128,6 +158,7 @@ class JsonAction(argparse.Action):
 
 
 class FelisAction(argparse.Action):
+    """argparse action to read a felis file into namespace.data["schema"]"""
     def __call__(self, parser, namespace, values, option_string):
         """figure out  the schema dict for create-table """
         tableName = namespace.data["table"]
