@@ -11,6 +11,8 @@ import os
 import re
 import Pegasus.DAX3 as peg
 
+# Need a fresh database name.........!!!
+database = "hsc_test_w_2020_14_14"
 
 def generateDax(name="object", inputData=None):
     """Generate a Pegasus DAX abstract workflow"""
@@ -23,10 +25,10 @@ def generateDax(name="object", inputData=None):
     dax.addFile(sedScript)
     partCfg = peg.File("Object_new.cfg")
     dax.addFile(partCfg)
-    # Note this json file has the database name....!!!
-    tableJson = peg.File("test.json")
+    tableJson = peg.File("table.json")
     dax.addFile(tableJson)
-    database = "hsc_rc2_w_2020_14_00"
+    catYaml = peg.File("hsc.yaml")
+    dax.addFile(catYaml)
 
     # (Ab)using the shared filesystem....!!!
     chunkBaseFolder = os.path.join("/project", "hchiang2", "qserv", "qqpoc")
@@ -35,8 +37,8 @@ def generateDax(name="object", inputData=None):
 
     # Create a new database
     task0a = peg.Job(name="qingest")
-    task0a.addArguments("http://lsst-qserv-master01:25080/ingest/v1/database", "post", "--data",
-                        "database="+str(database), "num_stripes=340 num_sub_stripes=3 overlap=0.01667")
+    task0a.addArguments("create-db", "http://lsst-qserv-master01", str(database), "-v",
+                        "--nStripe 340 --nSubStripe 3 --overlap 0.01667")
     dax.addJob(task0a)
     logfile = peg.File("qingest-a.log")
     dax.addFile(logfile)
@@ -46,8 +48,8 @@ def generateDax(name="object", inputData=None):
 
     # Create the Object table in Qserv
     task0b = peg.Job(name="qingest")
-    task0b.addArguments("http://lsst-qserv-master01:25080/ingest/v1/table", "post",
-                        "--json", tableJson)
+    task0b.addArguments("create-table", "http://lsst-qserv-master01", str(database),
+                        "Object", tableJson, catYaml, "-v")
     dax.addJob(task0b)
     logfile = peg.File("qingest-b.log")
     dax.addFile(logfile)
@@ -55,13 +57,13 @@ def generateDax(name="object", inputData=None):
     task0b.setStderr(logfile)
     task0b.uses(logfile, link=peg.Link.OUTPUT)
     task0b.uses(tableJson, link=peg.Link.INPUT)
+    task0b.uses(catYaml, link=peg.Link.INPUT)
     dax.depends(parent=task0a, child=task0b)
 
     # Start a super-transaction
     # Need to get the super transaction id from the log file
     task0c = peg.Job(name="qingest")
-    task0c.addArguments("http://lsst-qserv-master01:25080/ingest/v1/trans", "post",
-                        "--data", "database="+str(database))
+    task0c.addArguments("start-transaction", "http://lsst-qserv-master01", str(database))
     dax.addJob(task0c)
     transIdFile = peg.File("qingest-c.log")
     dax.addFile(transIdFile)
@@ -148,6 +150,7 @@ def generateDax(name="object", inputData=None):
             task5.setStdout(logfile)
             task5.setStderr(logfile)
             task5.uses(logfile, link=peg.Link.OUTPUT)
+            task5.uses(transIdFile, link=peg.Link.INPUT)
             dax.depends(parent=task4, child=task5)
             dax.depends(parent=task0c, child=task5)
 

@@ -7,6 +7,7 @@ import logging
 import os
 import requests
 import sys
+import yaml
 
 AUTH_PATH = "~/.lsst/qserv"
 
@@ -21,9 +22,49 @@ def authorize():
     return authKey
 
 
-def put(url, payload=None):
+def resolveUrl(command, host, port):
+    if "db" in command:
+        path = "/ingest/database"
+    elif "transaction" in command:
+        path = "/ingest/trans"
+    elif "table" in command:
+        path = "/ingest/table"
+    else:
+        raise NotImplementedError("Unrecognized command")
+    return  host + ':' + str(port) + path
+
+
+def _addArgumentCreateDb(subparser):
+    subparser.add_argument("--nStripe", type=int, dest="num_stripes",
+                           help="number of stripes to divide the sky into; "
+                           "same as the partitioning parameters num-stripes",
+                           action=DataAction)
+    subparser.add_argument("--nSubStripe", type=int, dest="num_sub_stripes",
+                           help="number of sub-stripes to divide each stripe into; "
+                           "same as the partitioning parameters num-sub-stripes",
+                           action=DataAction)
+    subparser.add_argument("--overlap", type=float,
+                           help="chunk/sub-chunk overlap radius (deg); "
+                           "same as the partitioning parameters overlap",
+                           action=DataAction)
+
+
+def _addArgumentCreateTable(subparser):
+    subparser.add_argument("table", type=str, action=DataAction,
+                            help="table name; will look for the schema in the felis file")
+    subparser.add_argument("json", type=str, action=JsonAction,
+                           help="a json config file containing the table parameters")
+    subparser.add_argument("felis", type=str, action=FelisAction,
+                           help="a felis schema file from cat containing the table schema")
+
+
+def put(url, payload=None, params=None):
+    """
+    inputs: payload `dict`
+    """
     authKey = authorize()
-    response = requests.put(url, json={"auth_key": authKey})
+    logging.debug(url)
+    response = requests.put(url, json={"auth_key": authKey}, params=params)
     responseJson = response.json()
     if not responseJson['success']:
         logging.critical("%s %s", url, responseJson['error'])
@@ -44,13 +85,12 @@ def post(url, payload):
     logging.debug(responseJson)
     logging.debug("success")
 
-    # For catching the super transaction ID
+    # For catching the super transaction ID in start-transaction
     # Want to print responseJson["databases"]["hsc_test_w_2020_14_00"]["transactions"]
     if "databases" in responseJson:
         # try:
         transId = list(responseJson["databases"].values())[0]["transactions"][0]["id"]
-        logging.debug(f"transaction ID is {transId}")
-        logging.info(transId)
+        logging.info(f"The super transaction ID is {transId}")
 
     # For catching the location host and port
     if "location" in responseJson and "chunk" in payload:
@@ -61,37 +101,101 @@ def post(url, payload):
 
 class DataAction(argparse.Action):
     """argparse action to attempt casting the values to floats and put into a dict"""
-
+    def __init__(self, option_strings, dest, nargs=None, type=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        self.vtype = type
+        super(DataAction, self).__init__(option_strings, dest, **kwargs)
     def __call__(self, parser, namespace, values, option_string):
-        d = dict()
-        for item in values:
-            k, v = item.split("=")
+        if not hasattr(namespace, "data"):
+            setattr(namespace, "data", dict())
+        if self.vtype is not None:
+            namespace.data[self.dest] = self.vtype(values)
+            logging.debug(namespace.data[self.dest])
+        else:
             try:
-                v = float(v)
+                namespace.data[self.dest] = float(values)
             except ValueError:
-                pass
-            finally:
-                d[k] = v
-        setattr(namespace, self.dest, d)
+                namespace.data[self.dest] = values
 
 
 class JsonAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
-        with open(values, 'r') as f:
+        with open(values, "r") as f:
             x = json.load(f)
-        setattr(namespace, self.dest, x)
+        for item in x:
+            namespace.data[item] = x[item]
+
+
+class FelisAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string):
+        """figure out  the schema dict for create-table """
+        tableName = namespace.data["table"]
+        print(f"Look for {tableName} table in the felis schema at {values}")
+        with open(values, "r") as f:
+            tables = yaml.safe_load(f)["tables"]
+        columns = [table for table in tables if table["name"] == tableName][0]["columns"]
+        schema = list()
+        for column in columns:
+            datatype = column["mysql:datatype"]
+            if "nullable" in column:
+                nullable = column["nullable"]
+            else:
+                nullable = True
+            if nullable:
+                nullstring = " DEFAULT NULL"
+            else:
+                nullstring = " NOT NULL"
+            schema.append({"name": column["name"], "type": column["mysql:datatype"] + nullstring})
+        schema.append({"name":"chunkId","type":"int(11) NOT NULL"})
+        schema.append({"name":"subChunkId","type":"int(11) NOT NULL"})
+        namespace.data["schema"] = schema
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="A thin python wrapper around Qserv REST web service")
+    parser = argparse.ArgumentParser(description="Qserv web services")
 
-    parser.add_argument("url", type=str, help="Web Service URL")
-    parser.add_argument("method", type=str, help="Request type", choices=["post", "put"])
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("--data", help="Key-value pairs to pass configs with the request",
-                       metavar="KEY=VALUE", nargs="*", action=DataAction)
-    group.add_argument("--json", type=str, help="Json file with the request configs", action=JsonAction)
-    parser.add_argument("--verbose", "-v", action="store_true", help="Use debug logging")
+    subparsers = parser.add_subparsers(dest="command", title="operational commands",
+                                       required=True,
+                                       description="supported web service operations",
+                                       help="use '<command> --help' to see more help")
+
+    operations = {"create-db": "create a database",
+                  "publish-db": "publish the database",
+                  "create-table": "create a table",
+                  "start-transaction": "start a super-transaction",
+                  "abort-transaction": "abort a super-transaction",
+                  "commit-transaction": "commit a super-transaction"
+                 }
+    for command in operations:
+        subparser = subparsers.add_parser(command, help=operations[command])
+        subparser.add_argument("host", type=str, help="Web service host base URL")
+        subparser.add_argument("--port", type=int, help="Web service server port", default=25080)
+        subparser.add_argument("--verbose", "-v", action="store_true", help="Use debug logging")
+
+        if command in ("create-db", "publish-db", "create-table", "start-transaction"):
+            subparser.add_argument("database", type=str, help="database name",
+                                   action=DataAction)
+
+        if command in ("commit-transaction", "abort-transaction"):
+            subparser.add_argument("transactionId", type=int, help="Super-transaction ID")
+
+        if command == "create-db":
+            _addArgumentCreateDb(subparser)
+        elif command == "create-table":
+            _addArgumentCreateTable(subparser)
+        elif command == "publish-db":
+            subparser.add_argument("--consolidate-secondary-index",
+                                   dest="consolidateSecondaryIndex",
+                                   action="store_true",
+                                   help="With this flag, consolidate secondary index "
+                                        "while publishing the database")
+        elif command == "commit-transaction":
+            subparser.add_argument("--build-secondary-index", dest="buildSecondaryIndex",
+                                   action="store_true",
+                                   help="With this flag, build secondary index "
+                                        "while commiting the transaction")
+
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -101,9 +205,26 @@ if __name__ == "__main__":
         logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler())
 
-    payload = args.data or args.json or dict()
-    logging.debug("Starting a request: %s with %s", args.url, payload)
-    if args.method == "post":
-        sys.exit(post(args.url, payload))
-    elif args.method == "put":
-        sys.exit(put(args.url, payload))
+    payload = args.data if hasattr(args, "data") else dict()
+    logging.debug("Request payload %s", payload)
+    with open('temp_dump.json', 'w') as f:
+        json.dump(payload, f, indent=2)
+
+    url = resolveUrl(args.command, args.host, args.port)
+    logging.debug("Starting a request: %s with %s", url, payload)
+
+    if args.command in ("create-db", "create-table", "start-transaction"):
+        sys.exit(post(url, payload))
+    elif args.command == "commit-transaction":
+        logging.info("Commiting Transaction %s", args.transactionId)
+        logging.debug("build-secondary-index? %s", args.buildSecondaryIndex)
+        params = {"abort": 0,
+                  "build-secondary-index": int(args.buildSecondaryIndex)}
+        sys.exit(put(url + "/" + str(args.transactionId), payload, params))
+    elif args.command == "abort-transaction":
+        params = {"abort": 1}
+        sys.exit(put(url + "/" + str(args.transactionId), payload, params))
+    else:  # publish-db
+        params = {"consolidate-secondary-index": args.consolidateSecondaryIndex}
+        sys.exit(put(url + "/" + str(args.data["database"]), params=params))
+    sys.exit(1)
