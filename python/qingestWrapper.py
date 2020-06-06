@@ -51,15 +51,15 @@ def resolveUrl(command, host, port):
 
 
 def _addArgumentCreateDb(subparser):
-    subparser.add_argument("--nStripe", type=int, dest="num_stripes",
+    subparser.add_argument("num-stripes", type=int,
                            help="number of stripes to divide the sky into; "
                            "same as the partitioning parameters num-stripes",
                            action=DataAction)
-    subparser.add_argument("--nSubStripe", type=int, dest="num_sub_stripes",
+    subparser.add_argument("num-sub-stripes", type=int,
                            help="number of sub-stripes to divide each stripe into; "
                            "same as the partitioning parameters num-sub-stripes",
                            action=DataAction)
-    subparser.add_argument("--overlap", type=float,
+    subparser.add_argument("overlap", type=float,
                            help="chunk/sub-chunk overlap radius (deg); "
                            "same as the partitioning parameters overlap",
                            action=DataAction)

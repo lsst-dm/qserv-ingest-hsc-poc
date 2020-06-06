@@ -38,7 +38,7 @@ def generateDax(name="object", inputData=None):
     # Create a new database
     task0a = peg.Job(name="qingest")
     task0a.addArguments("create-db", "http://lsst-qserv-master01", str(database), "-v",
-                        "--nStripe 340 --nSubStripe 3 --overlap 0.01667")
+                        "340", "3", "0.01667")
     dax.addJob(task0a)
     logfile = peg.File("qingest-a.log")
     dax.addFile(logfile)
