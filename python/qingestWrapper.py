@@ -45,6 +45,8 @@ def resolveUrl(command, host, port):
         resource = "/ingest/trans"
     elif "table" in command:
         resource = "/ingest/table"
+    elif "version" in command:
+        resource = "/meta/version"
     else:
         raise NotImplementedError("Unrecognized command")
     return host + ':' + str(port) + resource
@@ -72,6 +74,23 @@ def _addArgumentCreateTable(subparser):
                            help="a json config file containing the table parameters")
     subparser.add_argument("felis", type=str, action=FelisAction,
                            help="a felis schema file from cat containing the table schema")
+
+
+def get(url, params=None):
+    """Perform a standard put method
+
+    Parameters
+    ----------
+    params: `dict`
+        Parameters to be included in the URL's query string
+    """
+    response = requests.get(url, params=params)
+    responseJson = response.json()
+    if not responseJson["success"]:
+        logging.critical(responseJson["error"])
+        return 1
+    logging.debug(responseJson)
+    logging.debug("success")
 
 
 def put(url, payload=None, params=None):
@@ -195,13 +214,15 @@ if __name__ == "__main__":
                                        description="supported web service operations",
                                        help="use '<command> --help' to see more help")
 
-    operations = {"create-db": "create a database",
-                  "publish-db": "publish the database",
-                  "create-table": "create a table",
-                  "start-transaction": "start a super-transaction",
-                  "abort-transaction": "abort a super-transaction",
-                  "commit-transaction": "commit a super-transaction"
-                  }
+    operations = {
+        "version": "Retrieve the APi version",
+        "create-db": "create a database",
+        "publish-db": "publish the database",
+        "create-table": "create a table",
+        "start-transaction": "start a super-transaction",
+        "abort-transaction": "abort a super-transaction",
+        "commit-transaction": "commit a super-transaction"
+    }
     for command in operations:
         subparser = subparsers.add_parser(command, help=operations[command])
         subparser.add_argument("host", type=str, help="Web service host base URL")
@@ -259,7 +280,9 @@ if __name__ == "__main__":
     elif args.command == "abort-transaction":
         params = {"abort": 1}
         sys.exit(put(url + "/" + str(args.transactionId), payload, params))
-    else:  # publish-db
+    elif args.command == "publish-db":
         params = {"consolidate-secondary-index": args.consolidateSecondaryIndex}
         sys.exit(put(url + "/" + str(args.data["database"]), params=params))
+    elif args.command == "version":
+        sys.exit(get(url, payload))
     sys.exit(1)
