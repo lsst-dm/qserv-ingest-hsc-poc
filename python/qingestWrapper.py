@@ -177,14 +177,15 @@ class DataAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
         if not hasattr(namespace, "data"):
             setattr(namespace, "data", dict())
+        dest = self.dest.replace('-', '_')
         if self.vtype is not None:
-            namespace.data[self.dest] = self.vtype(values)
-            logging.debug(namespace.data[self.dest])
+            namespace.data[dest] = self.vtype(values)
+            logging.debug(namespace.data[dest])
         else:
             try:
-                namespace.data[self.dest] = float(values)
+                namespace.data[dest] = float(values)
             except ValueError:
-                namespace.data[self.dest] = values
+                namespace.data[dest] = values
 
 
 class JsonAction(argparse.Action):
@@ -300,10 +301,10 @@ if __name__ == "__main__":
         params = {"abort": 1}
         sys.exit(put(url + "/" + str(args.transactionId), payload, params))
     elif args.command == "publish-db":
-        params = {"consolidate-secondary-index": args.consolidateSecondaryIndex}
+        params = {"consolidate_secondary_index": int(args.consolidateSecondaryIndex)}
         sys.exit(put(url + "/" + str(args.data["database"]), params=params))
     elif args.command == "delete-db":
         sys.exit(delete(url + "/" + str(args.data["database"]), {"delete_secondary_index": 1}))
     elif args.command == "version":
-        sys.exit(get(url, payload))
+        sys.exit(get(url))
     sys.exit(1)
