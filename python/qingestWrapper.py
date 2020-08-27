@@ -76,6 +76,24 @@ def _addArgumentCreateTable(subparser):
                            help="a felis schema file from cat containing the table schema")
 
 
+def delete(url, params=None):
+    """Perform a standard delete method
+
+    Parameters
+    ----------
+    params: `dict`
+        Parameters to be included in the URL's query string
+    """
+    authKey = authorize()
+    response = requests.delete(url, json={"auth_key": authKey}, params=params)
+    responseJson = response.json()
+    if not responseJson["success"]:
+        logging.critical(responseJson["error"])
+        return 1
+    logging.debug(responseJson)
+    logging.debug("success")
+
+
 def get(url, params=None):
     """Perform a standard put method
 
@@ -217,6 +235,7 @@ if __name__ == "__main__":
     operations = {
         "version": "Retrieve the APi version",
         "create-db": "create a database",
+        "delete-db": "delete the database",
         "publish-db": "publish the database",
         "create-table": "create a table",
         "start-transaction": "start a super-transaction",
@@ -229,7 +248,7 @@ if __name__ == "__main__":
         subparser.add_argument("--port", type=int, help="Web service server port", default=25080)
         subparser.add_argument("--verbose", "-v", action="store_true", help="Use debug logging")
 
-        if command in ("create-db", "publish-db", "create-table", "start-transaction"):
+        if command in ("create-db", "delete-db", "publish-db", "create-table", "start-transaction"):
             subparser.add_argument("database", type=str, help="database name",
                                    action=DataAction)
 
@@ -283,6 +302,8 @@ if __name__ == "__main__":
     elif args.command == "publish-db":
         params = {"consolidate-secondary-index": args.consolidateSecondaryIndex}
         sys.exit(put(url + "/" + str(args.data["database"]), params=params))
+    elif args.command == "delete-db":
+        sys.exit(delete(url + "/" + str(args.data["database"]), {"delete_secondary_index": 1}))
     elif args.command == "version":
         sys.exit(get(url, payload))
     sys.exit(1)
