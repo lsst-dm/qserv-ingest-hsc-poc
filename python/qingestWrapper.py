@@ -245,7 +245,8 @@ if __name__ == "__main__":
     }
     for command in operations:
         subparser = subparsers.add_parser(command, help=operations[command])
-        subparser.add_argument("host", type=str, help="Web service host base URL")
+        subparser.add_argument("host", type=str,
+                               help="Web service host base URL; e.g. http://lsst-qserv-master03")
         subparser.add_argument("--port", type=int, help="Web service server port", default=25080)
         subparser.add_argument("--verbose", "-v", action="store_true", help="Use debug logging")
 
@@ -295,7 +296,7 @@ if __name__ == "__main__":
         logging.info("Commiting Transaction %s", args.transactionId)
         logging.debug("build-secondary-index? %s", args.buildSecondaryIndex)
         params = {"abort": 0,
-                  "build-secondary-index": int(args.buildSecondaryIndex)}
+                  "build_secondary_index": int(args.buildSecondaryIndex)}
         sys.exit(put(url + "/" + str(args.transactionId), payload, params))
     elif args.command == "abort-transaction":
         params = {"abort": 1}
