@@ -86,7 +86,10 @@ def delete(url, params=None):
     """
     authKey = authorize()
     response = requests.delete(url, json={"auth_key": authKey}, params=params)
-    responseJson = response.json()
+    if response.headers.get('content-type') == 'application/json':
+        responseJson = response.json()
+    else:
+        response.raise_for_status()
     if not responseJson["success"]:
         logging.critical(responseJson["error"])
         return 1
@@ -103,7 +106,10 @@ def get(url, params=None):
         Parameters to be included in the URL's query string
     """
     response = requests.get(url, params=params)
-    responseJson = response.json()
+    if response.headers.get('content-type') == 'application/json':
+        responseJson = response.json()
+    else:
+        response.raise_for_status()
     if not responseJson["success"]:
         logging.critical(responseJson["error"])
         return 1
@@ -124,7 +130,10 @@ def put(url, payload=None, params=None):
     authKey = authorize()
     logging.debug(url)
     response = requests.put(url, json={"auth_key": authKey}, params=params)
-    responseJson = response.json()
+    if response.headers.get('content-type') == 'application/json':
+        responseJson = response.json()
+    else:
+        response.raise_for_status()
     if not responseJson['success']:
         logging.critical("%s %s", url, responseJson['error'])
         return 1
@@ -144,7 +153,10 @@ def post(url, payload):
     payload["auth_key"] = authKey
     response = requests.post(url, json=payload)
     del payload["auth_key"]
-    responseJson = response.json()
+    if response.headers.get('content-type') == 'application/json':
+        responseJson = response.json()
+    else:
+        response.raise_for_status()
     if not responseJson["success"]:
         logging.critical(responseJson["error"])
         return 1
