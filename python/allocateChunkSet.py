@@ -54,7 +54,7 @@ if __name__ == "__main__":
     parser.add_argument("--id", type=int, help="Super transaction id")
     parser.add_argument("--idFile", type=str, help="Path to file containing the super transaction id")
     parser.add_argument("--url", type=str, help="Web Service URL",
-                        default="http://lsst-qserv-master01:25080/ingest/v1/chunk")
+                        default="http://lsst-qserv-master03:25080/ingest/chunk")
     parser.add_argument("--tableName", type=str, help="Table name", default="Object")
     args = parser.parse_args()
 
@@ -62,6 +62,12 @@ if __name__ == "__main__":
         transId = args.id
     else:
         with open(args.idFile, "r") as f:
-            transId = int(f.read())
+            for line in f:
+                m = re.match(r"The super transaction ID is (\d+)", line)
+                if m:
+                    transId = int(m.group(1))
+                    break
+        if not isinstance(transId, int):
+            raise RuntimeError("Failed to obtain the super transaction ID")
 
     sys.exit(main(args.basepath, args.url, transId, args.tableName, logger))

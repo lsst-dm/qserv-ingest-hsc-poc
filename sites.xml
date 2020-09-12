@@ -23,8 +23,6 @@
         <profile namespace="pegasus" key="auxillary.local">true</profile>
         <profile namespace="condor" key="universe" >vanilla</profile>
         <profile namespace="condor" key="getenv">true</profile>
-        <profile namespace="condor" key="requirements">(ALLOCATED_NODE_SET == &quot;${NODESET}&quot;)</profile>
-        <profile namespace="condor" key="+JOB_NODE_SET">&quot;${NODESET}&quot;</profile>
         <profile namespace="env" key="PEGASUS_HOME">/project/production/pegasus/4.9.0</profile>
     </site>
 
