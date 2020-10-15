@@ -43,6 +43,7 @@ tables:
   - name: patchId
     "@id": "#Object.patchId"
     datatype: text
+    length: 3
     description: patch ID
     mysql:datatype: TEXT
   - name: tract
@@ -53,6 +54,7 @@ tables:
   - name: patch
     "@id": "#Object.patch"
     datatype: text
+    length: 3
     description: Same as Patch ID
     mysql:datatype: TEXT
   - name: x
@@ -85,39 +87,10 @@ tables:
     datatype: double
     description:
     mysql:datatype: DOUBLE
-  - name: refIxx
-    "@id": "#Object.refIxx"
-    datatype: double
-    description:
-    mysql:datatype: DOUBLE
-  - name: refIyy
-    "@id": "#Object.refIyy"
-    datatype: double
-    description:
-    mysql:datatype: DOUBLE
-  - name: refIxy
-    "@id": "#Object.refIxy"
-    datatype: double
-    description:
-    mysql:datatype: DOUBLE
-  - name: refIxyPsf
-    "@id": "#Object.refIxyPsf"
-    datatype: double
-    description:
-    mysql:datatype: DOUBLE
-  - name: refIxxPsf
-    "@id": "#Object.refIxxPsf"
-    datatype: double
-    description:
-    mysql:datatype: DOUBLE
-  - name: refIyyPsf
-    "@id": "#Object.refIyyPsf"
-    datatype: double
-    description:
-    mysql:datatype: DOUBLE
   - name: refBand
     "@id": "#Object.refBand"
     datatype: text
+    length: 1
     description:
     mysql:datatype: TEXT
   - name: refExtendedness
@@ -209,26 +182,26 @@ tables:
     description: Integrated flux of the de Vaucouleurs component for the Bulge+Diski
       model. For g filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: gBdFluxBErr
     "@id": "#Object.gBdFluxBErr"
     datatype: double
     description: Uncertainty of gBdFluxB.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: gBdFluxD
     "@id": "#Object.gBdFluxD"
     datatype: double
     description: Integrated flux of the exponential component for the Bulge+Disk model.
       For g filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: gBdFluxDErr
     "@id": "#Object.gBdFluxDErr"
     datatype: double
     description: Uncertainty of gBdFluxD.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: gBdReB
     "@id": "#Object.gBdReB"
     datatype: double
@@ -328,13 +301,13 @@ tables:
     description: Kron flux within a defined multiple of the canonical kronRad for
       g filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: gKronFluxErr
     "@id": "#Object.gKronFluxErr"
     datatype: double
     description: Uncertainty of gKronFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: gKronRad
     "@id": "#Object.gKronRad"
     datatype: float
@@ -508,7 +481,7 @@ tables:
     description:
     mysql:datatype: BOOLEAN
   - name: gCalib_astrometry_used
-    "@id": "#Object.Calib_astrometry_used"
+    "@id": "#Object.gCalib_astrometry_used"
     datatype: boolean
     description:
     mysql:datatype: BOOLEAN
@@ -815,26 +788,26 @@ tables:
     description: Integrated flux of the de Vaucouleurs component for the Bulge+Diski
       model. For r filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: rBdFluxBErr
     "@id": "#Object.rBdFluxBErr"
     datatype: double
     description: Uncertainty of rBdFluxB.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: rBdFluxD
     "@id": "#Object.rBdFluxD"
     datatype: double
     description: Integrated flux of the exponential component for the Bulge+Disk model.
       For r filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: rBdFluxDErr
     "@id": "#Object.rBdFluxDErr"
     datatype: double
     description: Uncertainty of rBdFluxD.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: rBdReB
     "@id": "#Object.rBdReB"
     datatype: double
@@ -934,13 +907,13 @@ tables:
     description: Kron flux within a defined multiple of the canonical kronRad for
       r filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: rKronFluxErr
     "@id": "#Object.rKronFluxErr"
     datatype: double
     description: Uncertainty of rKronFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: rKronRad
     "@id": "#Object.rKronRad"
     datatype: float
@@ -979,14 +952,14 @@ tables:
     datatype: double
     description: Calibrated flux for Point Source model for r filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: phot.count
   - name: rPsFluxErr
     "@id": "#Object.rPsFluxErr"
     datatype: double
     description: Uncertainty of rPsFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: stat.error;phot.count
 
   - name: rDeblend_nChild
@@ -1115,7 +1088,7 @@ tables:
     description:
     mysql:datatype: BOOLEAN
   - name: rCalib_astrometry_used
-    "@id": "#Object.Calib_astrometry_used"
+    "@id": "#Object.rCalib_astrometry_used"
     datatype: boolean
     description:
     mysql:datatype: BOOLEAN
@@ -1421,26 +1394,26 @@ tables:
     description: Integrated flux of the de Vaucouleurs component for the Bulge+Diski
       model. For i filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: iBdFluxBErr
     "@id": "#Object.iBdFluxBErr"
     datatype: double
     description: Uncertainty of iBdFluxB.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: iBdFluxD
     "@id": "#Object.iBdFluxD"
     datatype: double
     description: Integrated flux of the exponential component for the Bulge+Disk model.
       For i filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: iBdFluxDErr
     "@id": "#Object.iBdFluxDErr"
     datatype: double
     description: Uncertainty of iBdFluxD.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: iBdReB
     "@id": "#Object.iBdReB"
     datatype: double
@@ -1540,13 +1513,13 @@ tables:
     description: Kron flux within a defined multiple of the canonical kronRad for
       i filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: iKronFluxErr
     "@id": "#Object.iKronFluxErr"
     datatype: double
     description: Uncertainty of iKronFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: iKronRad
     "@id": "#Object.iKronRad"
     datatype: float
@@ -1585,14 +1558,14 @@ tables:
     datatype: double
     description: Calibrated flux for Point Source model for i filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: phot.count
   - name: iPsFluxErr
     "@id": "#Object.iPsFluxErr"
     datatype: double
     description: Uncertainty of iPsFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: stat.error;phot.count
 
   - name: iDeblend_nChild
@@ -1721,7 +1694,7 @@ tables:
     description:
     mysql:datatype: BOOLEAN
   - name: iCalib_astrometry_used
-    "@id": "#Object.Calib_astrometry_used"
+    "@id": "#Object.iCalib_astrometry_used"
     datatype: boolean
     description:
     mysql:datatype: BOOLEAN
@@ -2027,26 +2000,26 @@ tables:
     description: Integrated flux of the de Vaucouleurs component for the Bulge+Diski
       model. For z filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: zBdFluxBErr
     "@id": "#Object.zBdFluxBErr"
     datatype: double
     description: Uncertainty of zBdFluxB.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: zBdFluxD
     "@id": "#Object.zBdFluxD"
     datatype: double
     description: Integrated flux of the exponential component for the Bulge+Disk model.
       For z filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: zBdFluxDErr
     "@id": "#Object.zBdFluxDErr"
     datatype: double
     description: Uncertainty of zBdFluxD.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: zBdReB
     "@id": "#Object.zBdReB"
     datatype: double
@@ -2146,13 +2119,13 @@ tables:
     description: Kron flux within a defined multiple of the canonical kronRad for
       z filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: zKronFluxErr
     "@id": "#Object.zKronFluxErr"
     datatype: double
     description: Uncertainty of zKronFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: zKronRad
     "@id": "#Object.zKronRad"
     datatype: float
@@ -2165,14 +2138,14 @@ tables:
     datatype: double
     description: Calibrated flux for Point Source model for z filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: phot.count
   - name: zPsFluxErr
     "@id": "#Object.zPsFluxErr"
     datatype: double
     description: Uncertainty of zPsFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: stat.error;phot.count
   - name: zApFlux
     "@id": "#Object.zApFlux"
@@ -2327,7 +2300,7 @@ tables:
     mysql:datatype: BOOLEAN
 
   - name: zCalib_astrometry_used
-    "@id": "#Object.Calib_astrometry_used"
+    "@id": "#Object.zCalib_astrometry_used"
     datatype: boolean
     description:
     mysql:datatype: BOOLEAN
@@ -2634,26 +2607,26 @@ tables:
     description: Integrated flux of the de Vaucouleurs component for the Bulge+Diski
       model. For y filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: yBdFluxBErr
     "@id": "#Object.yBdFluxBErr"
     datatype: double
     description: Uncertainty of yBdFluxB.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: yBdFluxD
     "@id": "#Object.yBdFluxD"
     datatype: double
     description: Integrated flux of the exponential component for the Bulge+Disk model.
       For y filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: yBdFluxDErr
     "@id": "#Object.yBdFluxDErr"
     datatype: double
     description: Uncertainty of yBdFluxD.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: yBdReB
     "@id": "#Object.yBdReB"
     datatype: double
@@ -2753,13 +2726,13 @@ tables:
     description: Kron flux within a defined multiple of the canonical kronRad for
       y filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: yKronFluxErr
     "@id": "#Object.yKronFluxErr"
     datatype: double
     description: Uncertainty of yKronFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
   - name: yKronRad
     "@id": "#Object.yKronRad"
     datatype: float
@@ -2798,14 +2771,14 @@ tables:
     datatype: double
     description: Calibrated flux for Point Source model for y filter.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: phot.count
   - name: yPsFluxErr
     "@id": "#Object.yPsFluxErr"
     datatype: double
     description: Uncertainty of yPsFlux.
     mysql:datatype: DOUBLE
-    fits:tunit: nmgy
+    fits:tunit: nanojansky
     ivoa:ucd: stat.error;phot.count
 
   - name: yDeblend_nChild
@@ -2935,7 +2908,7 @@ tables:
     mysql:datatype: BOOLEAN
 
   - name: yCalib_astrometry_used
-    "@id": "#Object.Calib_astrometry_used"
+    "@id": "#Object.yCalib_astrometry_used"
     datatype: boolean
     description:
     mysql:datatype: BOOLEAN
@@ -3265,6 +3238,7 @@ tables:
   - name: filter
     "@id": "#Source.filter"
     datatype: string
+    length: 1
     description: Name of the filter used to take the exposure where this source was measured.
     mysql:datatype: VARCHAR
     ivoa:ucd: meta.id;instr.filter
@@ -3674,7 +3648,7 @@ tables:
     "@id": "#Source.FootprintArea_value"
     datatype: int
     description:
-    mysql:datatype: INT
+    mysql:datatype: INTEGER
   - name: Jacobian_flag
     "@id": "#Source.Jacobian_flag"
     datatype: boolean
@@ -3685,6 +3659,16 @@ tables:
     datatype: double
     description:
     mysql:datatype: DOUBLE
+  - name: LocalBackground_instFlux
+    "@id": "#Source.LocalBackground_instFlux"
+    datatype: float
+    description: Estimate of local background residual flux computed from a large annulus
+    mysql:datatype: FLOAT
+  - name: LocalBackground_instFluxErr
+    "@id": "#Source.LocalBackground_instFluxErr"
+    datatype: float
+    description: Error in local background residual flux
+    mysql:datatype: FLOAT
   - name: LocalBackground_flag
     "@id": "#Source.LocalBackground_flag"
     datatype: boolean
@@ -3899,7 +3883,7 @@ tables:
     "@id": "#Source.Deblend_nChild"
     datatype: int
     description:
-    mysql:datatype: INT
+    mysql:datatype: INTEGER
   - name: Deblend_parentTooBig
     "@id": "#Source.Deblend_parentTooBig"
     datatype: boolean
@@ -3972,6 +3956,11 @@ tables:
     mysql:datatype: BOOLEAN
   - name: sky_source
     "@id": "#Source.sky_source"
+    datatype: boolean
+    description:
+    mysql:datatype: BOOLEAN
+  - name: detect_isPrimary
+    "@id": "#Source.detect_isPrimary"
     datatype: boolean
     description:
     mysql:datatype: BOOLEAN

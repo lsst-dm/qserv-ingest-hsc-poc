@@ -12,7 +12,7 @@ import re
 import Pegasus.DAX3 as peg
 
 # Need a fresh database name.........!!!
-database = "hsc_test_w_2020_14_14"
+database = "hsc_rc2_w_2020_38_02"
 
 def generateDax(name="object", inputData=None):
     """Generate a Pegasus DAX abstract workflow"""
