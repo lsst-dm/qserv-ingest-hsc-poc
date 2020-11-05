@@ -70,3 +70,12 @@ tr replctl-trans {
         type "INSTALLED"
     }
 }
+
+tr loadData {
+    site lsstvc {
+        pfn "${POC}/python/loadData.py"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+    }
+}

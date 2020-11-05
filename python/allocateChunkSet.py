@@ -12,7 +12,7 @@ AUTH_PATH = "~/.lsst/qserv"
 
 
 def main(basepath, url, transactionId, tableName, logger):
-    """Make loading commands for all chunk files in the given folder"""
+    """Allocate chunks for all chunk files in the given folder"""
     try:
         with open(os.path.expanduser(AUTH_PATH), 'r') as f:
             authKey = f.read().strip()
@@ -35,12 +35,7 @@ def main(basepath, url, transactionId, tableName, logger):
             else:
                 host = responseJson['location']['host']
                 port = responseJson['location']['port']
-                #logger.info("%d %s %d" % (chunkId,host,port))
-                cmd = f"docker run --rm -t --network host -u 1000:1000 " \
-                      f"-v /etc/passwd:/etc/passwd:ro -v {basepath}:{basepath}:ro " \
-                      f"--name qserv-replica-file-ingest- qserv/replica:tools " \
-                      f"qserv-replica-file-ingest  --auth-key=AUTHKEY FILE " \
-                      f"{host} {port} {transactionId} {tableName} P {entry.path}"
+                cmd = f"http://{host}:{port} {transactionId} {tableName} {entry.path} {chunkId}"
                 logger.debug(cmd)
 
 

@@ -62,6 +62,17 @@ def generateDax(name="object", inputData=None):
     task0c.uses(transIdFile, link=peg.Link.OUTPUT)
     dax.depends(parent=task0a, child=task0c)
 
+    # Commit a super-transaction
+    task0d = peg.Job(name="replctl-trans")
+    task0d.addProfile(peg.Profile(peg.Namespace.CONDOR, "request_memory", "2GB"))
+    task0d.addArguments("http://lsst-qserv-master03:25080", str(database), "-a")
+    dax.addJob(task0d)
+    logfile = peg.File("qingest-d.log")
+    dax.addFile(logfile)
+    task0d.setStdout(logfile)
+    task0d.setStderr(logfile)
+    task0d.uses(logfile, link=peg.Link.OUTPUT)
+
     i = 0
     with open(inputData, 'r') as f:
         for line in f:
@@ -148,6 +159,20 @@ def generateDax(name="object", inputData=None):
             task5.uses(transIdFile, link=peg.Link.INPUT)
             dax.depends(parent=task4, child=task5)
             dax.depends(parent=task0c, child=task5)
+
+            taskname = 'loadData'
+            task6 = peg.Job(name=taskname)
+            task6.addProfile(peg.Profile(peg.Namespace.CONDOR, "request_memory", "2GB"))
+            task6.addArguments(logfile)
+            dax.addJob(task6)
+            task6.uses(logfile, link=peg.Link.INPUT)
+            logfile6 = peg.File("%s-%s.log" % (taskname, i, ))
+            dax.addFile(logfile6)
+            task6.setStdout(logfile6)
+            task6.setStderr(logfile6)
+            task6.uses(logfile6, link=peg.Link.OUTPUT)
+            dax.depends(parent=task5, child=task6)
+            dax.depends(parent=task6, child=task0d)
 
     return dax
 
