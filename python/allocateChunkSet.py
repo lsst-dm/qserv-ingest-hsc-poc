@@ -63,7 +63,7 @@ if __name__ == "__main__":
     else:
         with open(args.idFile, "r") as f:
             for line in f:
-                m = re.match(r"The super transaction ID is (\d+)", line)
+                m = re.match(r"Started transaction (\d+)", line)
                 if m:
                     transId = int(m.group(1))
                     break

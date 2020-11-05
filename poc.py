@@ -11,8 +11,8 @@ import os
 import re
 import Pegasus.DAX3 as peg
 
-# Need a fresh database name.........!!!
-database = "hsc_rc2_w_2020_38_02"
+# Point to the data repo
+database = "file:///project/hchiang2/qserv/w_2020_42/repo"
 
 def generateDax(name="object", inputData=None):
     """Generate a Pegasus DAX abstract workflow"""
@@ -35,45 +35,32 @@ def generateDax(name="object", inputData=None):
     if not os.path.isdir(chunkBaseFolder):
         logging.warning("Chunk file base folder %s invalid", chunkBaseFolder)
 
-    # Create a new database
-    task0a = peg.Job(name="qingest")
+    # Create a new database and the Object table in Qserv
+    task0a = peg.Job(name="replctl-register")
     task0a.addProfile(peg.Profile(peg.Namespace.CONDOR, "request_memory", "2GB"))
-    task0a.addArguments("create-db", "http://lsst-qserv-master03", str(database), "-v",
-                        "340", "3", "0.01667")
+    task0a.addArguments("http://lsst-qserv-master03:25080",
+                        str(database), "--felis", catYaml, "-v")
     dax.addJob(task0a)
     logfile = peg.File("qingest-a.log")
     dax.addFile(logfile)
     task0a.setStdout(logfile)
     task0a.setStderr(logfile)
     task0a.uses(logfile, link=peg.Link.OUTPUT)
-
-    # Create the Object table in Qserv
-    task0b = peg.Job(name="qingest")
-    task0b.addProfile(peg.Profile(peg.Namespace.CONDOR, "request_memory", "2GB"))
-    task0b.addArguments("create-table", "http://lsst-qserv-master03", str(database),
-                        "Object", tableJson, catYaml, "-v")
-    dax.addJob(task0b)
-    logfile = peg.File("qingest-b.log")
-    dax.addFile(logfile)
-    task0b.setStdout(logfile)
-    task0b.setStderr(logfile)
-    task0b.uses(logfile, link=peg.Link.OUTPUT)
-    task0b.uses(tableJson, link=peg.Link.INPUT)
-    task0b.uses(catYaml, link=peg.Link.INPUT)
-    dax.depends(parent=task0a, child=task0b)
+    task0a.uses(catYaml, link=peg.Link.INPUT)
 
     # Start a super-transaction
     # Need to get the super transaction id from the log file
-    task0c = peg.Job(name="qingest")
+    task0c = peg.Job(name="replctl-trans")
     task0c.addProfile(peg.Profile(peg.Namespace.CONDOR, "request_memory", "2GB"))
-    task0c.addArguments("start-transaction", "http://lsst-qserv-master03", str(database))
+    task0c.addArguments("http://lsst-qserv-master03:25080", str(database),
+                        "--start")
     dax.addJob(task0c)
     transIdFile = peg.File("qingest-c.log")
     dax.addFile(transIdFile)
     task0c.setStdout(transIdFile)
     task0c.setStderr(transIdFile)
     task0c.uses(transIdFile, link=peg.Link.OUTPUT)
-    dax.depends(parent=task0b, child=task0c)
+    dax.depends(parent=task0a, child=task0c)
 
     i = 0
     with open(inputData, 'r') as f:
