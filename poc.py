@@ -25,8 +25,6 @@ def generateDax(name="object", inputData=None):
     dax.addFile(sedScript)
     partCfg = peg.File("partition.json")
     dax.addFile(partCfg)
-    tableJson = peg.File("table.json")
-    dax.addFile(tableJson)
     catYaml = peg.File("hsc.yaml")
     dax.addFile(catYaml)
 
