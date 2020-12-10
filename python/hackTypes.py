@@ -28,7 +28,7 @@ def main(inputFile, outputFile):
         'TEXT': 'str',
     }
 
-    filepath = os.path.join(getPackageDir("sdm_schemas"), 'yml', 'hsc.yaml')
+    filepath = os.path.join(getPackageDir("sdm_schemas"), 'yml', 'desc_dc2_run22i_dr6_v1.yaml')
     with open(filepath, 'r') as f:
         hscSchema = yaml.safe_load(f)['tables']
     objectSchema = [table for table in hscSchema if table['name'] == 'Object']

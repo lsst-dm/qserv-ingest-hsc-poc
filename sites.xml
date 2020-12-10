@@ -24,6 +24,7 @@
         <profile namespace="condor" key="universe" >vanilla</profile>
         <profile namespace="condor" key="getenv">true</profile>
         <profile namespace="env" key="PEGASUS_HOME">/project/production/pegasus/4.9.0</profile>
+        <profile namespace="dagman" key="retry">0</profile>
     </site>
 
 </sitecatalog>

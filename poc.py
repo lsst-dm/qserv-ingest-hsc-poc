@@ -12,20 +12,20 @@ import re
 import Pegasus.DAX3 as peg
 
 # Point to the data repo
-database = "file:///project/hchiang2/qserv/w_2020_42/repo"
+database = "file:///project/hchiang2/qserv/dc2_dr6/repo"
 
 def generateDax(name="object", inputData=None):
     """Generate a Pegasus DAX abstract workflow"""
     dax = peg.ADAG(name)
 
     # These config-ish files are expected in the input/ folder
-    schemaAbh = peg.File("schema.abh")
+    schemaAbh = peg.File("schema.dc2.abh")
     dax.addFile(schemaAbh)
     sedScript = peg.File("fixCsv.sed")
     dax.addFile(sedScript)
     partCfg = peg.File("partition.json")
     dax.addFile(partCfg)
-    catYaml = peg.File("hsc.yaml")
+    catYaml = peg.File("desc_dc2_run22i_dr6_v1.yaml")
     dax.addFile(catYaml)
 
     # (Ab)using the shared filesystem....!!!
