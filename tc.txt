@@ -52,3 +52,30 @@ tr qingest {
         type "STAGEABLE"
     }
 }
+
+tr replctl-register {
+    site lsstvc {
+        pfn "/home/hchiang2/stack/qserv-ingest/rootfs/ingest/bin/replctl-register"
+        arch "x86_64"
+        os "linux"
+        type "INSTALLED"
+    }
+}
+
+tr replctl-trans {
+    site lsstvc {
+        pfn "/home/hchiang2/stack/qserv-ingest/rootfs/ingest/bin/replctl-trans"
+        arch "x86_64"
+        os "linux"
+        type "INSTALLED"
+    }
+}
+
+tr loadData {
+    site lsstvc {
+        pfn "${POC}/python/loadData.py"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+    }
+}

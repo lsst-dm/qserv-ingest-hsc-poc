@@ -12,12 +12,6 @@ xErr FLOAT
 yErr FLOAT
 xy_flag bool
 refFwhm DOUBLE
-refIxx DOUBLE
-refIyy DOUBLE
-refIxy DOUBLE
-refIxyPsf DOUBLE
-refIxxPsf DOUBLE
-refIyyPsf DOUBLE
 refBand char
 refExtendedness DOUBLE
 izStd DOUBLE
